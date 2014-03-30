@@ -2,4 +2,4 @@ plunderphonics
 ==============
 
 requirements:
-- aubio (google it
+- aubio (google it)

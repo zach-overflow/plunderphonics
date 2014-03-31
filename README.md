@@ -6,4 +6,4 @@ The end goal of plunderphonics is to create a new song from samples of other son
 
 
 requirements:
-- aubio (google it)
+- aubio: http://aubio.org/

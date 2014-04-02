@@ -1,0 +1,7 @@
+PyChoReLib (for Python 2.3):
+http://chordrecognizer.sourceforge.net/
+"Library that maps comma-separated note arrays to chords."
+
+Librosa:
+https://github.com/bmcfee/librosa/
+"Beat tracking, chroma analysis, and feature aggregation."

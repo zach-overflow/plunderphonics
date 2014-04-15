@@ -26,46 +26,56 @@ while True:
 	if read < hop_s: break
 # i = 0
 # while i < len(onsets):
+# 	if i == 0:
+# 		print 'fuckdapolice'
 # 	print onsets[i]
 # 	i += 1
 
-
-def extract_drums(attack, decay, onset_array = onsets, wavefile = sys.argv[1]):
+def extract_drums(attack = 200, decay = 4000, onset_array = onsets, wavefile = sys.argv[1]):
 	"""extracts the individual drum hits from a wav file and writes them as separate wav files.
 	   attack and decay are in samples instead of milliseconds. So 44 samples is about 1 millisecond 
-	   for a second recorded at 44.1Khz samplerate."""
+	   for a second recorded at 44.1Khz samplerate.
+
+	   I am getting the following error: https://stackoverflow.com/questions/12273495/select-multiple-elements-from-python-array
+	   too much work and too tired to fix at the moment."""
 	read_data = wavio.readwav(wavefile)
 	read_array = read_data[2] # a list of sample values in sequential order for the wavefile
 	for i in range(len(onset_array)):
-		if i - attack < 0 and i + decay:
-			#do some shit
-		elif i - attack < 0:
-			#do some other shit
-		elif i + decay > len(read_array):
-			#do some other other shit
-		else: 
-			
+		if onset_array[i] - attack < 0 and onset_array[i] + decay > len(onset_array):
+			write_array = [read_array[onset_array[i]: onset_array[i+1]]] 
+			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
+		elif onset_array[i] - attack < 0:
+			write_array = [read_array[onset_array[i]: read_array[onset_array[i] + decay]]] 
+			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
+		elif onset_array[i] + decay > len(onset_array):
+			write_array = [read_array[onset_array[i] - attack: read_array[onset_array[i] + onset_array[len(onset_array) - 1]]]] 
+			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
+		else:
+			write_array = [read_array[onset_array[i] - attack: read_array[onset_array[i] + decay]]] 
+			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
+
+extract_drums()
 
 
-def write_clip(start, end, clipname, wavefile = sys.argv[1]):
-	read_data = wavio.readwav(wavefile) 
-	read_array = read_data[2] # a list of sample values in sequential order for the wavefile
-	write_array = []
-	for i in range(start, end + 1):
-		write_array.append(read_array[i])
-	write_wav = wavio.writewav24('{0}.wav'.format(clipname), read_data[0], write_array)
+# def write_clip(start, end, clipname, wavefile = sys.argv[1]):
+# 	read_data = wavio.readwav(wavefile) 
+# 	read_array = read_data[2] # a list of sample values in sequential order for the wavefile
+# 	write_array = []
+# 	for i in range(start, end + 1):
+# 		write_array.append(read_array[i])
+# 	write_wav = wavio.writewav24('{0}.wav'.format(clipname), read_data[0], write_array)
 
-def replace_drum(start, end, replacement_file, wavefile):
-	"""replaces a singular drum hit in the wavefile with a replacement drum hit
-	   from the replacement_file"""
-	read_data = wavio.readwav(wavefile) 
-	read_array = read_data[2] # a list of sample values in sequential order for the wavefile.
-	replace_data = wavio.readwav(replacement_file)
-	replace_array = replace_data[2] # a list of sample values in sequential order for the replacement file.
-	i = 0
-	while i < len(replace_array):
-		read_array[i + start] = replace_array[i]
-		i += 1
+# def replace_drum(start, end, replacement_file, wavefile):
+# 	"""replaces a singular drum hit in the wavefile with a replacement drum hit
+# 	   from the replacement_file"""
+# 	read_data = wavio.readwav(wavefile) 
+# 	read_array = read_data[2] # a list of sample values in sequential order for the wavefile.
+# 	replace_data = wavio.readwav(replacement_file)
+# 	replace_array = replace_data[2] # a list of sample values in sequential order for the replacement file.
+# 	i = 0
+# 	while i < len(replace_array):
+# 		read_array[i + start] = replace_array[i]
+# 		i += 1
 
 
 

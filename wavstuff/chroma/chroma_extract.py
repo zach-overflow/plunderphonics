@@ -1,4 +1,4 @@
-# A script for extracting pitch information from chords
+# A script for extracting pitch information from chords - still in development
 # See https://github.com/bmcfee/librosa/ for documentation on Librosa
 
 import PyChoReLib.ChordRecognizer as cr

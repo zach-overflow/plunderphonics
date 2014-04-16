@@ -24,14 +24,7 @@ while True:
 		onsets.append(o.get_last())
 	total_frames += read
 	if read < hop_s: break
-# i = 0
-# while i < len(onsets):
-# 	if i == 0:
-# 		print 'fuckdapolice'
-# 	print onsets[i]
-# 	i += 1
-
-#def extract_drums(attack = 200, decay = 4000, onset_array = onsets, wavefile = sys.argv[1]):
+	
 def extract_drums(onset_array = onsets, wavefile = sys.argv[1]):
 	"""extracts the individual drum hits from a wav file and writes them as separate wav files.
 	   attack and decay are in samples instead of milliseconds. So 44 samples is about 1 millisecond 
@@ -48,26 +41,6 @@ def extract_drums(onset_array = onsets, wavefile = sys.argv[1]):
 		else:
 			write_array = read_array[onset_array[i]: onset_array[i+1]]
 			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
-
-		#the attack is longer than the start of the wavefile to the i'th onset 
-		#AND the decay is longer than the dist from i'th onset and end of wavefile.
-
-		# if onset_array[i] - attack < 0 and onset_array[i] + decay >= len(read_array): 
-		# 	write_array = read_array[onset_array[i]: onset_array[i+1]]
-		# 	wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
-		# #the attack is longer than the start of the wavefile to the i'th onset
-		# elif onset_array[i] - attack < 0: 
-		# 	write_array = read_array[onset_array[i]: onset_array[i] + decay]
-		# 	wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
-		# #the decay is longer than the dist from the i'th onset and the end of the wavefile.
-		# elif onset_array[i] + decay > len(read_array):
-		# 	write_array = read_array[onset_array[i] - attack: onset_array[len(onset_array) - 1]]
-		# 	wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
-		# #the attack plus the decay do not cause indexing errors so the total drumhit{i}.wav file
-		# #is of length attack + decay samples.
-		# else:
-		# 	write_array = read_array[onset_array[i] - attack: onset_array[i] + decay] 
-		# 	wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
 
 extract_drums()
 

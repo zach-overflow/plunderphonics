@@ -9,4 +9,5 @@ currently we only support wav files.
 requirements:
 - aubio: http://aubio.org/
 - wavio: https://gist.github.com/WarrenWeckesser/7461781
+- librosa: https://github.com/bmcfee/librosa/
 

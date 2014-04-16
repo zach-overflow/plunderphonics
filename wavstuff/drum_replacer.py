@@ -24,8 +24,8 @@ while True:
 		onsets.append(o.get_last())
 	total_frames += read
 	if read < hop_s: break
-	
-def extract_drums(onset_array = onsets, wavefile = sys.argv[1]):
+
+def extract_drums(attack = 1500, onset_array = onsets, wavefile = sys.argv[1]):
 	"""extracts the individual drum hits from a wav file and writes them as separate wav files.
 	   attack and decay are in samples instead of milliseconds. So 44 samples is about 1 millisecond 
 	   for a second recorded at 44.1Khz samplerate.
@@ -35,11 +35,19 @@ def extract_drums(onset_array = onsets, wavefile = sys.argv[1]):
 	read_data = wavio.readwav(wavefile)
 	read_array = read_data[2] # a list of sample values in sequential order for the wavefile
 	for i in range(len(onset_array) - 1):
-		if onset_array[i + 1] >= len(read_array):
-			write_array = read_array[onset_array[i]:]
+		if onset_array[i + 1] >= len(read_array) and onset_array[i] - attack < 0:
+			write_array = read_array[0:]
+			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
+		elif onset_array[i] - attack < 0:
+			write_array = read_array[0: onset_array[i + 1]]
+			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
+		elif onset_array[i + 1] >= len(read_array):
+			write_array = read_array[onset_array[i] - attack:]
 			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
 		else:
-			write_array = read_array[onset_array[i]: onset_array[i+1]]
+			write_array = read_array[onset_array[i] - attack: onset_array[i+1]]
+			if i == 20: # for testing only
+				print len(write_array)
 			wavio.writewav24('drumhit{0}.wav'.format(i), read_data[0], write_array)
 
 extract_drums()

@@ -1,6 +1,35 @@
 #! /usr/bin/env python
 
 import os, sys
+import wave, pyaudio
+
+def play_wav(filename):
+    """
+    Source:
+    http://stackoverflow.com/questions/17657103/how-to-play-wav-file-in-python
+    """
+    #define stream chunk   
+    chunk = 1024  
+    #open a wav format music  
+    f = wave.open(filename, "rb")  
+    #instantiate PyAudio  
+    p = pyaudio.PyAudio()
+    #open stream  
+    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
+                    channels = f.getnchannels(),  
+                    rate = f.getframerate(),  
+                    output = True)  
+    #read data  
+    data = f.readframes(chunk)  
+    #play stream  
+    while data != '':  
+        stream.write(data)  
+        data = f.readframes(chunk)  
+    #stop stream  
+    stream.stop_stream()  
+    stream.close()  
+    #close PyAudio  
+    p.terminate()
 
 if len(sys.argv) < 2:
     print "Usage: {0} <input_directory>".format(sys.argv[0])
@@ -30,7 +59,28 @@ for i in range(num_classes):
 print "{0} classes saved : {1}".format(len(classes), classes)
 
 # Configure output directory
-output_dir = raw_input("--> Enter output directory : ")
+output_dir_prompt = "Enter output directory : " 
+output_dir = raw_input("--> " + output_dir_prompt)
 while os.path.exists(output_dir):
-    output_dir = raw_input("--> Error, directory/file already exists." +
-                           " Enter output directory : ")
+    output_dir = raw_input("--> Error, directory/file already exists. " +
+                            output_dir_prompt)
+
+# Allowing user to label samples
+i = 0
+while i < len(files):
+    cmd_prompt = "Current file: {0}\nEnter command (p: play, 0-9: class, s: skip, c: show classes) : ".format(files[i])
+    cmd = raw_input("--> " + cmd_prompt).lower()
+    while not cmd.isdigit() and cmd not in ["p", "s", "c"]:
+        cmd = raw_input("--> Error, invalid command. " + cmd_prompt).lower()
+    if cmd == "p":
+        try:
+            play_wav(files[i])
+        except:
+            print "Error trying to play file"
+    elif cmd == "c":
+        for j, c in enumerate(classes):
+            print "{0} : {1}".format(j, c)
+    elif cmd == "s":
+        i = i + 1
+    elif cmd.isdigit():
+        pass

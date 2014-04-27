@@ -5,3 +5,7 @@ http://chordrecognizer.sourceforge.net/
 Librosa:
 https://github.com/bmcfee/librosa/
 "Beat tracking, chroma analysis, and feature aggregation."
+
+Timidity++:
+http://timidity.sourceforge.net/
+"Tool for batch-conversion of midi chords to .wav files"

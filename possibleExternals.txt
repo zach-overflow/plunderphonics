@@ -1,11 +1,23 @@
 PyChoReLib (for Python 2.3):
 http://chordrecognizer.sourceforge.net/
-"Library that maps comma-separated note arrays to chords."
+"library that maps comma-separated note arrays to chords"
 
 Librosa:
 https://github.com/bmcfee/librosa/
-"Beat tracking, chroma analysis, and feature aggregation."
+"beat tracking, chroma analysis, and feature aggregation"
 
 Timidity++:
 http://timidity.sourceforge.net/
-"Tool for batch-conversion of midi chords to .wav files"
+"a tool for batch-conversion of midi chords to .wav files"
+
+HomeMusician Soundfont Library
+http://soundfonts.homemusician.net/
+"a library of soundfonts for chord synthesis"
+
+FluidSynth
+http://sourceforge.net/apps/trac/fluidsynth/
+"a tool for batch conversion of MIDI chords to .wav files in Python"
+
+MidiUtil
+http://code.google.com/p/midiutil/
+"generate midi files in python"

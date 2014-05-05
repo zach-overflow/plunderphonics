@@ -13,3 +13,5 @@ requirements:
 - wavio: https://gist.github.com/WarrenWeckesser/7461781
 - librosa: https://github.com/bmcfee/librosa/
 - pyaudio: http://people.csail.mit.edu/hubert/pyaudio/
+- fluidsynth: http://sourceforge.net/apps/trac/fluidsynth/
+- midiutil: https://code.google.com/p/midiutil/

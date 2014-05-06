@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import sys
+import sys, wavio, csv
 from aubio import source, pvoc, mfcc
 from numpy import array, vstack, zeros
 
@@ -28,6 +28,15 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 source_filename = sys.argv[1]
+
+
+#write a temporary file of length samples_for_mfcc which we compute mfcc
+readwav = wavio.readwav(source_filename)
+readwav_array = readwav[2]
+#need to refind onset here
+mfccwav_start = #CSV bullshit
+
+mfccwav_array = readwav_array[mfccwav_start: mfccwav_start + samples_for_mfcc]
 
 samplerate = 0
 if len( sys.argv ) > 2: samplerate = int(sys.argv[2])

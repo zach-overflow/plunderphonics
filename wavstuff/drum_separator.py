@@ -26,16 +26,21 @@ def extract_drums(attack, decay, onset_array, wavefile):
     read_array = read_data[2] # a list of sample values in sequential order for the wavefile
     for i in range(len(onset_array) - 1):
 	    if onset_array[i + 1] >= len(read_array) and onset_array[i] - attack < 0:
+	    	start = 0
 	    	write_array = read_array[0:]
 	    elif onset_array[i] - attack < 0:
+	    	start = 0
 	    	write_array = read_array[0: onset_array[i + 1]]
 	    elif onset_array[i + 1] >= len(read_array):
+	    	start = onset_array[i] - attack
 	    	write_array = read_array[onset_array[i] - attack:]
 	    else:
+	    	start = onset_array[i] - attack
 	    	write_array = read_array[onset_array[i] - attack: onset_array[i+1]]
 	    if len(write_array) - attack >= decay: #if the drumhit file is long enough, write it into the unclassified_drums directory
 	    	wavio.writewav24('{0}_{1}.wav'.format(filename, "%05d" % i), read_data[0], write_array)
 	    	shutil.move('{0}_{1}.wav'.format(filename, "%05d" % i), 'unclassified_drums')
+	    	samples_to_onset = onset_array[i] - start
 
 fileList = os.listdir('./unseparated_drums') #list of drum files in unseparated_drums directory
 fileList = filter(lambda f : '.wav' in f, fileList)

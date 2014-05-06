@@ -34,4 +34,5 @@ while True:
     frames_read += read
     if read < hop_s: break
 
-print mfccs
+print "\nMOTHERFUCKING ARRAY : ", mfccs
+print "\nMOTHERFUCKING DIMENSIONS : ", len(mfccs), " x ", len(mfccs[0])

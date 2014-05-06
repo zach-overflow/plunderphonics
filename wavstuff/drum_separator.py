@@ -11,7 +11,7 @@ win_s = 512         #fft size
 hop_s = win_s / 2   #hop size
 samplerate = 0
 
-def extract_drums(attack, onset_array, wavefile):
+def extract_drums(attack, decay, onset_array, wavefile):
     """
     extracts the individual drum hits from a wav file and writes them as separate wav files.
     attack and decay are in samples instead of milliseconds. So 44 samples is about 1 millisecond 
@@ -33,7 +33,7 @@ def extract_drums(attack, onset_array, wavefile):
 	    	write_array = read_array[onset_array[i] - attack:]
 	    else:
 	    	write_array = read_array[onset_array[i] - attack: onset_array[i+1]]
-	    if len(write_array) - attack >= 2200: #if the drumhit file is long enough, write it into the unclassified_drums directory
+	    if len(write_array) - attack >= decay: #if the drumhit file is long enough, write it into the unclassified_drums directory
 	    	wavio.writewav24('{0}_{1}.wav'.format(filename, "%05d" % i), read_data[0], write_array)
 	    	shutil.move('{0}_{1}.wav'.format(filename, "%05d" % i), 'unclassified_drums')
 
@@ -54,7 +54,7 @@ while len(fileList) > 0: #iterate through all unseparated drum clips in unsepara
 			onsets.append(o.get_last())
 		total_frames += read
 		if read < hop_s: break
-	extract_drums(1500, onsets, filename)
+	extract_drums(1500, 3100, onsets, filename)
 	del fileList[0] #remove clip from list of drum files to separate
 print 'DONE, BRO!'
 

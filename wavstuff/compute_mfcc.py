@@ -43,6 +43,10 @@ for csvfile in csv_files:
 
 print samples_to_onset_dict
 
+for wav in wav_files:
+    wav_file_path = "{0}{1}".format(source_directory, wav)
+    print wav_file_path, samples_to_onset_dict[wav], wav
+
 '''
 # write a temporary file of length samples_for_mfcc which we compute mfcc
 readwav = wavio.readwav(source_filename)

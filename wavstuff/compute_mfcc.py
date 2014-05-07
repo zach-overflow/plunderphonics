@@ -45,7 +45,18 @@ print samples_to_onset_dict
 
 for wav in wav_files:
     wav_file_path = "{0}{1}".format(source_directory, wav)
-    print wav_file_path, samples_to_onset_dict[wav], wav
+    samples_to_onset = samples_to_onset_dict[wav]
+    readwav = wavio.readwav(wav_file_path)
+    readwav_array = readwav[2] # sample data from the wav file of interest
+    mfccwav_array = readwav_array[samples_to_onset: samples_to_onset + samples_for_mfcc]
+    temp_filename = '{0}{1}_temp.wav'.format(wav_file_path, wav)
+    wavio.writewav24(temp_filename, readwav[0], mfccwav_array) # temp wav file that the mfcc's are calculated from
+    # run mfcc analyisis on the temp file
+    # delete the temp file 
+    # associate the mfcc data with the wav file in some vector csv way.
+    # ???
+    # profit.
+
 
 '''
 # write a temporary file of length samples_for_mfcc which we compute mfcc

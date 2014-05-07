@@ -56,22 +56,23 @@ for wav in wav_files:
 
     # run mfcc analyisis on the temp file
     samplerate = 0
-    s = source(source_filename, samplerate, hop_s)
+    s = source(temp_filename, samplerate, hop_s)
     samplerate = s.samplerate
     p = pvoc(win_s, hop_s)
     m = mfcc(win_s, n_filters, n_coeffs, samplerate)
-    mfccs = zeroes([n_coeffs,])
+    mfccs = zeros([n_coeffs,])
     frames_read = 0
     while True:
         samples, read = s()
         spec = p(samples)
         mfcc_out = m(spec)
         mfccs = vstack((mfccs, mfcc_out))
-        frames_Read += read
+        frames_read += read
         if read < hop_s: break
     # take the DCT term out
     mfccs = map(lambda v : delete(v, 0), mfccs)
     # delete the temp file 
+    os.remove('{0}'.format(temp_filename))
     # associate the mfcc data with the wav file in some vector csv way.
-    # ???
+    
     # profit.

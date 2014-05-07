@@ -2,7 +2,7 @@
 
 import sys, wavio, csv, os
 from aubio import source, pvoc, mfcc
-from numpy import array, vstack, zeros
+from numpy import array, vstack, zeros, delete
 
 # fft size
 win_s = 512
@@ -13,9 +13,11 @@ n_filters = 40
 # we are discarding the first coefficient
 n_coeffs = 19
 samplerate = 44100
+
 # milliseconds of data to compute MFCC for. 
 # we need this to ensure that our MFCC matrix has the same dimensions
 # for each drum hit file. 
+# NOT USING THIS RIGHT NOW
 ms_for_mfcc = 50
 
 #samples_for_mfcc = int(samplerate * ms_for_mfcc * 0.001)
@@ -51,36 +53,25 @@ for wav in wav_files:
     mfccwav_array = readwav_array[samples_to_onset: samples_to_onset + samples_for_mfcc]
     temp_filename = '{0}{1}_temp.wav'.format(source_directory, os.path.splitext(wav)[0])
     wavio.writewav24(temp_filename, readwav[0], mfccwav_array) # temp wav file that the mfcc's are calculated from
+
     # run mfcc analyisis on the temp file
+    samplerate = 0
+    s = source(source_filename, samplerate, hop_s)
+    samplerate = s.samplerate
+    p = pvoc(win_s, hop_s)
+    m = mfcc(win_s, n_filters, n_coeffs, samplerate)
+    mfccs = zeroes([n_coeffs,])
+    frames_read = 0
+    while True:
+        samples, read = s()
+        spec = p(samples)
+        mfcc_out = m(spec)
+        mfccs = vstack((mfccs, mfcc_out))
+        frames_Read += read
+        if read < hop_s: break
+    # take the DCT term out
+    mfccs = map(lambda v : delete(v, 0), mfccs)
     # delete the temp file 
     # associate the mfcc data with the wav file in some vector csv way.
     # ???
     # profit.
-
-
-'''
-# write a temporary file of length samples_for_mfcc which we compute mfcc
-readwav = wavio.readwav(source_filename)
-readwav_array = readwav[2]
-# need to refind onset here
-mfccwav_start = #CSV bullshit
-
-mfccwav_array = readwav_array[mfccwav_start: mfccwav_start + samples_for_mfcc]
-
-samplerate = 0
-if len( sys.argv ) > 2: samplerate = int(sys.argv[2])
-
-s = source(source_filename, samplerate, hop_s)
-samplerate = s.samplerate
-p = pvoc(win_s, hop_s)
-m = mfcc(win_s, n_filters, n_coeffs, samplerate)
-
-mfccs = zeros([n_coeffs,])
-frames_read = 0
-while True:
-    samples, read = s()
-    spec = p(samples)
-    mfcc_out = m(spec)
-    mfccs = vstack((mfccs, mfcc_out))
-    frames_read += read
-    if read < hop_s: break'''

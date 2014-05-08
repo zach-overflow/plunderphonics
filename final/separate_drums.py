@@ -50,19 +50,19 @@ def extract_drums(attack, decay, onset_array, wavefile):
 		if len(write_array) - attack >= decay: #if the drumhit file is long enough, write it into the unclassified_drums directory
 			output_filename = '{0}_{1}.wav'.format(filename, "%05d" % i)
 			wavio.writewav24(output_filename, read_data[0], write_array)
-			shutil.move(output_filename, 'unclassified_drums')
+			shutil.move(output_filename, '{0}'.format(output_dir))
 			samples_to_onset = onset_array[i] - start
 			samples_to_onset_array.append([output_filename, samples_to_onset])
 	with open(output_csv_filename, 'w') as csvfile:
 		a = csv.writer(csvfile)
 		a.writerows(samples_to_onset_array)
-	shutil.move(output_csv_filename, 'unclassified_drums')
+	shutil.move(output_csv_filename, '{0}'.format(output_dir))
 
-fileList = os.listdir('./unseparated_drums') #list of drum files in unseparated_drums directory
+fileList = os.listdir('{0}'.format(input_dir)) #list of drum files in corpus directory
 fileList = filter(lambda f : '.wav' in f, fileList)
 
-while len(fileList) > 0: #iterate through all unseparated drum clips in unseparated_drums directory
-	filename = './unseparated_drums/{0}'.format(fileList[0])
+while len(fileList) > 0: #iterate through all unseparated drum clips in corpus directory
+	filename = './{0}/{1}'.format(input_dir, fileList[0])
 	s = a.source(filename, samplerate, hop_s)
 	samplerate = s.samplerate
 	o = a.onset("default", win_s, hop_s, samplerate)

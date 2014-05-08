@@ -16,7 +16,7 @@ hop_s = win_s / 2      # hop size
 samplerate = 0         # compiler bullshit
 filename = sys.argv[1] # the drum clip we are replacing
 attack = 1500          # attack value in samples, not seconds
-corpus = sys.argv[2]   # the corpus of separated drum hits
+corpus = sys.argv[2]   # the corpus of separated drum hits (a csv file)
 
 
 #finds the onsets within the drum clip we are replacing
@@ -40,9 +40,14 @@ def main():
 	"""
 	similarDrums = os.listdir('./separated_corpus') #list of drumhit filenames directory.
 	similarDrums = filter(lambda f : '.wav' in f, fileList)
-	# create the vectSpace object of drumVect objects made from similarDrums
 	"""
+	create the vectSpace object of drumVect objects made from similarDrums
 	for each key-val in the csv file 
+	build a list of tuples with the form (key= wavfile, val= vector)
+	iterate through the list of tuples, creating drumVect objects for each and 
+	add those drumVect objects to the vectSpace object
+	make a drumVect object from the provided file (sys.argv[1])
+	find the closest drum hit from the vectSpace to the above drumVect ojbect and assign to replacedHit
 	"""
 
 	w = wavio.readwav(sys.argv[1])

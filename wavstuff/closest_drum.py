@@ -31,11 +31,11 @@ class NN:
 		"""
 		calculates the euclidean distance between 2 drum vectors.
 		"""
-
-	def manhattan_dist(self, drumVect1, drumVect2):
-		"""
-		calculates the manhattan distance between 2 drum vectors.
-		"""
+		if drumVect1.get_dimensions() != drumVect2.get_dimensions():
+			raise ValueError("drum vectors are of different dimenions")
+		else:
+			eucDist = np.linalg.norm(drumVect1-drumVect2)
+			return eucDist
 
 	def k_closest(self, k, drumVect):
 		"""
@@ -56,11 +56,12 @@ class drumVect:
 	def __init__(self, filename, numArray, classification):
 		self.filename = filename # used to identify specific vectors as well as finding the wavefile
 		self.numArray = numArray # a numpy array representing the vector entries
-		self.classification = classification # a string (i.e. snare, kick, etc)
+		self.classification = classification # a string (i.e. 'snare', 'kick', etc)
 
 	def get_wavefile(self):
 		"""
 		returns the wavefile of the drumhit associated with the drumVect of interest.
+		file should be in {blank} directory
 		"""
 
 	def get_classification(self):
@@ -74,4 +75,11 @@ class drumVect:
 		returns the numArray of the drumVect.
 		"""
 		return numArray
+
+	def get_dimensions(self):
+		"""
+		returns the dimensions of the vector.
+		"""
+		dimensions = np.shape(self.numArray)
+		return dimensions
 

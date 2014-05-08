@@ -80,8 +80,8 @@ extract_drums(attack, samples_for_mfcc, onsets, filename)
 
 # compute MFCC for input file
 separated_files = os.listdir('separated_input')
-wav_files = filter(lambda f : '.wav' in f, separated_files)
-csv_file = filter(lambda f : '.csv' in f, separated_files)[0]
+wav_files = filter(lambda f : '.wav' in f, separated_files) # individual hits from the input file
+csv_file = filter(lambda f : '.csv' in f, separated_files)[0] # samples to onset csv
 samples_to_onset_dict = {}
 with open('separated_input/{0}'.format(csv_file), 'r') as c:
     read = csv.reader(c)
@@ -125,7 +125,7 @@ for temp_file in temp_files:
     og_name = os.path.basename(temp_file)
     csv_output.append([og_name] + mfcc_col.aslist())
 
-with open('input_mfcc.csv', 'w') as csvfile:
+with open('input_mfcc.csv', 'w') as csvfile: # csv for input file list of tuples ({filename}, {numpy array})
     write = csv.writer(csvfile)
     write.writerows(csv_output)
 
@@ -148,8 +148,16 @@ def main():
 	for elem in csvList:
 		dVect = closest_drum.drumVect('{0}'.format(elem[0]), elem[1])
 		vSpace.add_vect(dVect)
-	# create a drumVect object from the input .wav
-	inVect = closest_drum.drumVect('{0}'.format(filename), )
+	# create a drumVect objects from the input .wav
+    inputCsvList = []
+    with open('input_mfcc.csv', 'rb') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            inputCsvList.append([row[0], array(map(lambda e : float(e), row[1:]))])
+    inVectArray = [] #array of drumVect objects from the input .wav
+    for elem in inputCsvList:
+        dVect = closest_drum.drumVect('{0}'.format(elem[0]), elem[1])
+        inVectArray.append(dVect)
 	"""
 	make a drumVect object from the provided file (sys.argv[1])
 	find the closest drum hit from the vectSpace to the above drumVect ojbect and assign to replacedHit
@@ -167,7 +175,7 @@ def main():
 			nextHit = None
 		else: 
 			nextHit = onsets[hit + 1] 
-		replacedHit =  #our replacement hit.
+		replacedHit = vSpace.k_closest(1, inVectArray[hit]).get_filename() #our replacement hit.
 		repl = wavio.readwav('./unclassified_drums/{0}'.format(replacedHit)) #file of replacement hit
 		replacedHitArray = repl[2] #sample array
 		if nextHit != None:
@@ -186,6 +194,6 @@ def main():
 				writeArray[start: start + len(replacedHitArray)] = replacedHitArray
 		hit += 1 
 	wavio.writewav24('{0}replaced.wav'.format(filename[:len(filename) - 4]), w[0], writeArray) #save the replaced drum file as a new file.
-	shutil.move('{0}replaced.wav'.format(filename[:len(filename) - 4]), './replaced_drums')
+	#shutil.move('{0}replaced.wav'.format(filename[:len(filename) - 4]), './replaced_drums')
 
 main()

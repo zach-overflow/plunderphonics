@@ -146,29 +146,24 @@ def main():
         for row in reader:
             csvList.append([row[0], np.array(map(lambda e : float(e), row[1:]))])
     # create drumVect objects from each entry in csvList and add said drumVect to vSpace
-    print 1
     for elem in csvList:
         dVect = drumVect.drumVect('{0}'.format(elem[0]), elem[1])
         #print type(dVect)
         vSpace.add_vect(dVect)
-    print 2
     # create a drumVect objects from the input .wav
     inputCsvList = []
-    print 3
     with open('input_mfcc.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
             inputCsvList.append([row[0], np.array(map(lambda e : float(e), row[1:]))])
     inVectArray = [] #array of drumVect objects from the input .wav
-    print 4
     for elem in inputCsvList:
         dVect = drumVect.drumVect('{0}'.format(elem[0]), elem[1])
         inVectArray.append(dVect)
-    print 5
     w = wavio.readwav(sys.argv[1])
     writeArray = w[2] #a copy of the data from the original file supplied. modifying this.
     hit = 0
-    while hit < len(onsets):
+    while hit < len(inVectArray):
         if onsets[hit] - attack < 0:
             start = onsets[hit]
         else:
@@ -177,9 +172,8 @@ def main():
             nextHit = None
         else: 
             nextHit = onsets[hit + 1] 
-        #print vSpace.k_closest(1, inVectArray[hit])[0]
-        replacedHit = vSpace.k_closest(1, inVectArray[hit])[0].get_filename() #our replacement hit.
-        repl = wavio.readwav('./unclassified_drums/{0}'.format(replacedHit)) #file of replacement hit
+        replacedHit = vSpace.k_closest(1, inVectArray[hit])[1].get_filename() #our replacement hit.
+        repl = wavio.readwav('./{0}'.format(replacedHit)) #file of replacement hit
         replacedHitArray = repl[2] #sample array
         if nextHit != None:
 			#the replacedHitArray is longer than the distance between current and next hit

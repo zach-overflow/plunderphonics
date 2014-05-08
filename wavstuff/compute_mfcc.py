@@ -2,7 +2,7 @@
 
 import sys, wavio, csv, os
 from aubio import source, pvoc, mfcc
-from numpy import array, vstack, zeros, delete
+from numpy import array, vstack, zeros, append, delete
 
 # fft size
 win_s = 512
@@ -45,6 +45,7 @@ for csvfile in csv_files:
 
 print samples_to_onset_dict
 
+temp_files = []
 for wav in wav_files:
     wav_file_path = "{0}{1}".format(source_directory, wav)
     samples_to_onset = int(samples_to_onset_dict[wav])
@@ -53,10 +54,14 @@ for wav in wav_files:
     mfccwav_array = readwav_array[samples_to_onset: samples_to_onset + samples_for_mfcc]
     temp_filename = '{0}{1}_temp.wav'.format(source_directory, os.path.splitext(wav)[0])
     wavio.writewav24(temp_filename, readwav[0], mfccwav_array) # temp wav file that the mfcc's are calculated from
+    temp_files.append(temp_filename)
 
-    # run mfcc analyisis on the temp file
+csv_output = []
+
+for temp_file in temp_files:
+    # run mfcc analysis on the temp file
     samplerate = 0
-    s = source(temp_filename, samplerate, hop_s)
+    s = source(temp_file, samplerate, hop_s)
     samplerate = s.samplerate
     p = pvoc(win_s, hop_s)
     m = mfcc(win_s, n_filters, n_coeffs, samplerate)
@@ -71,8 +76,11 @@ for wav in wav_files:
         if read < hop_s: break
     # take the DCT term out
     mfccs = map(lambda v : delete(v, 0), mfccs)
+    # collapse into column vector
+    mfcc_column_vector = array([])
+    for m in mfccs:
+        mfcc_column_vector = append(mfcc_column_vector, m)
     # delete the temp file 
-    os.remove('{0}'.format(temp_filename))
+    os.remove('{0}'.format(temp_file))
     # associate the mfcc data with the wav file in some vector csv way.
-    
-    # profit.
+    og_name = os.path.basename(temp_file)

@@ -25,11 +25,12 @@ ms_for_mfcc = 50
 # temporary
 samples_for_mfcc = 3100
 
-if len(sys.argv) < 2:
-    print "Usage: %s <source_directory>" % sys.argv[0]
+if len(sys.argv) < 3:
+    print "Usage: %s <source_directory> <output_csv_file>" % sys.argv[0]
     sys.exit(1)
 
 source_directory = sys.argv[1]
+output_csv = sys.argv[2]
 
 files_in_src_dir = os.listdir(source_directory)
 wav_files = filter(lambda f : '.wav' in f, files_in_src_dir)
@@ -84,6 +85,6 @@ for temp_file in temp_files:
     og_name = os.path.basename(temp_file)
     csv_output.append([og_name] + mfcc_column_vector.aslist())
 
-with open('mfcc_data.csv', 'w') as csvfile:
+with open(output_csv, 'w') as csvfile:
     write = csv.writer(csvfile)
     write.writerows(csv_output)

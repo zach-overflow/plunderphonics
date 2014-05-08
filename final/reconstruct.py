@@ -1,6 +1,7 @@
 import sys, os, wave, wavio, random, shutil
 import aubio as a
 import closest_drum
+from numpy import array, vstack, zeros, append, delete, asarray
 
 """
 This program takes a given drum clip and replaces each individual hit with a similar-sounding hit from
@@ -17,6 +18,9 @@ samplerate = 0         # compiler bullshit
 filename = sys.argv[1] # the drum clip we are replacing
 attack = 1500          # attack value in samples, not seconds
 corpus = sys.argv[2]   # the corpus of separated drum hits (a csv file)
+samples_for_mfcc = 3100
+n_filters = 40
+n_coeffs = 19
 
 
 #finds the onsets within the drum clip we are replacing
@@ -72,7 +76,58 @@ def extract_drums(attack, decay, onset_array, wavefile):
         a.writerows(samples_to_onset_array)
     shutil.move(output_csv_filename, '{0}'.format(output_dir))
 
-extract_drums(attack, 3100, onsets, filename)
+extract_drums(attack, samples_for_mfcc, onsets, filename)
+
+# compute MFCC for input file
+separated_files = os.listdir('separated_input')
+wav_files = filter(lambda f : '.wav' in f, separated_files)
+csv_file = filter(lambda f : '.csv' in f, separated_files)[0]
+samples_to_onset_dict = {}
+with open('separated_input/{0}'.format(csv_file), 'r') as c:
+    read = csv.reader(c)
+    for row in reader:
+        samples_to_onset_dict[os.path.basename(row[0])] = row[1]
+
+hop_s = win_s / 4
+temp_files = []
+for wav in wav_files:
+    wav_file_path = "separated_input/{0}".format(wav)
+    samples_to_onset = int(samples_to_onset_dict[wav])
+    readwav = wavio.readwav(wav_file_path)
+    readwav_array = readwav[2]
+    mfccwav_array = readwav_array[samples_to_onset : samples_to_onset + samples_for_mfcc]
+    temp_filename = 'separated_input/{0}_temp.wav'.format(os.path.splitext(wav)[0])
+    wavio.writewav24(temp_filename, readwav[0],mfccwav_array)
+    temp_files.append(temp_filename)
+
+csv_output = []
+
+for temp_file in temp_files:
+    samplerate = 0
+    s = source(temp_file, samplerate, hop_s)
+    samplerate = s.samplerate
+    p = pvoc(win_s, hop_s)
+    m = mfcc(win_s, n_filters, n_coeffs, samplerate)
+    mfccs = zeros([n_coeffs,])
+    frames_read = 0
+    while True:
+        samples, read = s()
+        spec = p(samples)
+        mfcc_out = m(spec)
+        mfccs = vstack((mfccs, mfcc_out))
+        frames_read += read
+        if read < hop_s: break
+    mfccs = map(lambda v : delete(v, 0), mfccs)
+    mfcc_col = array([])
+    for m in mfccs:
+        mfcc_col = append(mfcc_col, m)
+    os.remove(temp_file)
+    og_name = os.path.basename(temp_file)
+    csv_output.append([og_name] + mfcc_col.aslist())
+
+with open('input_mfcc.csv', 'w') as csvfile:
+    write = csv.writer(csvfile)
+    write.writerows(csv_output)
 
 def main():
 	"""
@@ -134,11 +189,3 @@ def main():
 	shutil.move('{0}replaced.wav'.format(filename[:len(filename) - 4]), './replaced_drums')
 
 main()
-
-
-
-
-
-
-
-

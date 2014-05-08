@@ -43,8 +43,6 @@ for csvfile in csv_files:
         for row in reader:
             samples_to_onset_dict[os.path.basename(row[0])] = row[1]
 
-print samples_to_onset_dict
-
 temp_files = []
 for wav in wav_files:
     wav_file_path = "{0}{1}".format(source_directory, wav)

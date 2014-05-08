@@ -32,20 +32,31 @@ while True:
 	total_frames += read
 	if read < hop_s: break
 
+# get samples to onset csv for the input file
+
+
 def main():
 	"""
 	writes the new file which will show up in the current directory as {filename}replaced.wav
 	at the moment the replacement method is a simple prototype without using any ML yet.
 	Once we are able to find the most similar-sounding drumhit this will obviously have to change.
 	"""
-	similarDrums = os.listdir('./separated_corpus') #list of drumhit filenames directory.
+	similarDrums = os.listdir('./separated_corpus') # list of drumhit filenames directory.
 	similarDrums = filter(lambda f : '.wav' in f, fileList)
+	vSpace = closest_drum.vectSpace([],[]) # the vectSpace object to find the closest-souding drumhit.
+	csvList = []
+	# csvList is made of a list of tuples of form ({filename}, {mfcc numpy array})
+	with open('mfcc_data.csv', 'rb') as csvfile:
+		reader = csv.reader(csvfile)
+		for row in reader:
+			csvList.append([row[0], array(map(lambda e : float(e), row[1:]))])
+	# create drumVect objects from each entry in csvList and add said drumVect to vSpace
+	for elem in csvList:
+		dVect = closest_drum.drumVect('{0}'.format(elem[0]), elem[1])
+		vSpace.add_vect(dVect)
+	# create a drumVect object from the input .wav
+	inVect = closest_drum.drumVect('{0}'.format(filename), )
 	"""
-	create the vectSpace object of drumVect objects made from similarDrums
-	for each key-val in the csv file 
-	build a list of tuples with the form (key= wavfile, val= vector)
-	iterate through the list of tuples, creating drumVect objects for each and 
-	add those drumVect objects to the vectSpace object
 	make a drumVect object from the provided file (sys.argv[1])
 	find the closest drum hit from the vectSpace to the above drumVect ojbect and assign to replacedHit
 	"""

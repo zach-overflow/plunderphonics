@@ -46,7 +46,7 @@ for csvfile in csv_files:
 
 temp_files = []
 for wav in wav_files:
-    wav_file_path = "{0}{1}".format(source_directory, wav)
+    wav_file_path = "{0}/{1}".format(source_directory, wav)
     samples_to_onset = int(samples_to_onset_dict[wav])
     readwav = wavio.readwav(wav_file_path)
     readwav_array = readwav[2] # sample data from the wav file of interest

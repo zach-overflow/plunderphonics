@@ -123,7 +123,7 @@ for temp_file in temp_files:
         mfcc_col = append(mfcc_col, m)
     os.remove(temp_file)
     og_name = os.path.basename(temp_file)
-    csv_output.append([og_name] + mfcc_col.aslist())
+    csv_output.append([og_name] + mfcc_col.tolist())
 
 with open('input_mfcc.csv', 'w') as csvfile: # csv for input file list of tuples ({filename}, {numpy array})
     write = csv.writer(csvfile)

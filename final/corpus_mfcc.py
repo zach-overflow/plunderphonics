@@ -83,7 +83,7 @@ for temp_file in temp_files:
     os.remove('{0}'.format(temp_file))
     # associate the mfcc data with the wav file in some vector csv way.
     og_name = os.path.basename(temp_file)
-    csv_output.append([og_name] + mfcc_column_vector.aslist())
+    csv_output.append([og_name] + mfcc_column_vector.tolist())
 
 with open(output_csv, 'w') as csvfile:
     write = csv.writer(csvfile)

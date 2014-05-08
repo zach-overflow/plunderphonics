@@ -25,6 +25,6 @@ How to use:
 3.) $ python corpus_mfcc.py separated_corpus corpus_mfccs.csv
     Computes MFCC features on all files in separated_corpus and stores in a 
     csv file corpus_mfccs.csv
-4.) $ python reconstruct.py input.wav corpus_mfccs.csv output.wav
+4.) $ python reconstruct.py input.wav corpus_mfccs.csv 
     Creates a file output.wav from reconstructing input.wav with samples 
     from corpus

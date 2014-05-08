@@ -1,5 +1,6 @@
-import sys, os, numpy, csv, wavio
+import sys, os, csv, wavio, copy
 import aubio as a
+import numpy as np
 
 """
 This is where the magic happens. The drum vectors are associated with their nearest neighbor here.
@@ -25,7 +26,7 @@ class NN:
 		"""
 		returns the vectArray associated with the NN.
 		"""
-		return vectArray
+		return self.vectArray
 
 	def euclid_dist(self, drumVect1, drumVect2):
 		"""
@@ -34,47 +35,85 @@ class NN:
 		if drumVect1.get_dimensions() != drumVect2.get_dimensions():
 			raise ValueError("drum vectors are of different dimenions")
 		else:
-			eucDist = np.linalg.norm(drumVect1-drumVect2)
+			d1 = drumVect1.get_numArray()
+			d2 = drumVect2.get_numArray()
+			eucDist = np.linalg.norm(d1-d2)
 			return eucDist
 
 	def k_closest(self, k, drumVect):
 		"""
 		finds the k closest vectors to the provided drum vector (drumVect).
+		Returns these kVectors as a list where the closest vector is the first element.
+		kList should be sorted such that the first element is the closest drumVect and the kth
+		element is the farthest of the k drumVects from the provided drumVect.
 		"""
+		kList = [] # list of tuple. first elem is distance to provided drumVect, second elem is a drumVect object.
+		minDist = float('inf')
+		modVectArray = copy.copy(self.vectArray)
+		modVectArray.remove(drumVect)
+		for vector in modVectArray:
+			dist = self.euclid_dist(drumVect, vector)
+			if dist < minDist:
+				minDist = dist
+				if len(kList) == k:
+					kList.remove(k - 1)
+				kList.insert(0, (minDist, vector)) # place vector at front of kList
+			else:
+				if len(kList) == k:
+					nearBool = False
+					i = 0
+					while i < len(kList):
+						if kList[i][0] > dist:
+							nearBool = True
+							replaceIndex = i
+							break
+						i += 1
+					if nearBool:
+						kList.insert(replaceIndex, (dist, vector))
+						kList.remove(k) 
+				if len(kList) < k:
+					i = 0
+					while i < len(kList):
+						if kList[i][0] > dist:
+							replaceIndex = i
+							kList.insert(replaceIndex, (dist, vector))
+							break
+						i += 1
+		finalKList = []
+		for closeK in kList:
+			finalKList.append(closeK[1])
+		return finalKList
 
 	def add_vect(self, drumVect):
 		"""
 		adds a drumVect into the space.
 		"""
+		self.vectArray.append(drumVect)
 
 	def remove_vect(self, drumVect):
 		"""
 		removes a drumVect from the space.
 		"""
+		self.vectArray.remove(drumVect)
 
 class drumVect:
-	def __init__(self, filename, numArray, classification):
+	def __init__(self, filename, numArray):
 		self.filename = filename # used to identify specific vectors as well as finding the wavefile
 		self.numArray = numArray # a numpy array representing the vector entries
-		self.classification = classification # a string (i.e. 'snare', 'kick', etc)
+		#self.classification = classification # a string (i.e. 'snare', 'kick', etc)
 
-	def get_wavefile(self):
+	#def get_wavefile(self):
 		"""
 		returns the wavefile of the drumhit associated with the drumVect of interest.
 		file should be in {blank} directory
 		"""
-
-	def get_classification(self):
-		"""
-		returns the classification of the drumVect.
-		"""
-		return classification
+		# some csv bullshit
 
 	def get_numArray(self):
 		"""
 		returns the numArray of the drumVect.
 		"""
-		return numArray
+		return self.numArray
 
 	def get_dimensions(self):
 		"""
@@ -82,4 +121,12 @@ class drumVect:
 		"""
 		dimensions = np.shape(self.numArray)
 		return dimensions
+
+
+	# def get_classification(self): 
+	# 	"""
+	# 	returns the classification of the drumVect.
+	# 	"""
+	# 	return self.classification
+
 

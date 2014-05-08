@@ -122,7 +122,7 @@ for temp_file in temp_files:
     for m in mfccs:
         mfcc_col = append(mfcc_col, m)
     os.remove(temp_file)
-    og_name = os.path.basename(temp_file)
+    og_name = os.path.splitext(temp_file)[0][:5] + '.wav'
     csv_output.append([og_name] + mfcc_col.tolist())
 
 with open('input_mfcc.csv', 'w') as csvfile: # csv for input file list of tuples ({filename}, {numpy array})

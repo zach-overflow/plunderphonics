@@ -1,5 +1,7 @@
 Directory structure:
 
+for drum replacement:
+
 /corpus             :   directory containing the original .WAV files
 
 /separated_corpus   :   directory containing individual drum hits extracted 
@@ -28,3 +30,30 @@ How to use:
 4.) $ python reconstruct.py input.wav corpus_mfccs.csv 
     Creates a file output.wav from reconstructing input.wav with samples 
     from corpus
+    
+for chroma analysis:
+
+/midi_files         :   a directory for MIDI files
+
+/wav_files          :   a directory for .WAV files used in training
+
+/test_files         :   a directory for .WAV files used in testing
+
+/chromagrams        :   a directory of chromagrams stored as numpy arrays
+                        to be analyzed by the SVM
+
+/midi_gen.py        :   script for generating MIDI files
+
+/test_gen.py        :   script for generating testing .WAV files from MIDI
+                        files
+
+/train_gen.py       :   script for generating training .WAV files from MIDI
+                        files
+
+/chroma_extract.py  :   extract chromagram information from a directory of
+                        .WAV files
+                        
+/svm_train.py       :   train and test the SVM on batches of chroma data
+
+How to use:
+(formal method still in development)

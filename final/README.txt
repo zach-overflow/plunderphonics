@@ -56,4 +56,4 @@ for chroma analysis:
 /svm_train.py       :   train and test the SVM on batches of chroma data
 
 How to use:
-(formal method still in development)
+(GUI still in development)
